@@ -6,6 +6,7 @@ class MapModel {
   int nbLine = 0;
   int nbCol = 0;
   int nbBomb = 0;
+  int nbFlag = 0;
   List<List<CaseModel>> _cases = List<List<CaseModel>>.empty();
 
   MapModel({required int nbLine, required int nbCol, required int nbBomb}) {
@@ -18,6 +19,7 @@ class MapModel {
   bool hasFlag(int row, int col) => _cases[row][col].hasFlag;
   bool hasExploded(int row, int col) => _cases[row][col].hasExploded;
   bool hasBomb(int row, int col) => _cases[row][col].hasBomb;
+  List<List<CaseModel>> get cases => _cases;
 
 
   void _initCases() {
@@ -72,6 +74,28 @@ class MapModel {
     _initCases();
     _initBombs();
     _initNumbers();
+  }
+
+  void revealAdjacents(int row, int col){
+    if (row < 0 || row >= nbLine || col < 0 || col >= nbCol) {
+      return;
+    }
+    CaseModel c = _cases[row][col];
+    if (!c.hidden) {
+      return;
+    }
+    c.hidden = false;
+    if (c.number != 0) {
+      return;
+    }
+    revealAdjacents(row - 1, col);
+    revealAdjacents(row + 1, col);
+    revealAdjacents(row, col - 1);
+    revealAdjacents(row, col + 1);
+    revealAdjacents(row + 1, col + 1);
+    revealAdjacents(row + 1, col - 1);
+    revealAdjacents(row - 1, col + 1);
+    revealAdjacents(row - 1, col - 1);
   }
 
   void reveal(CaseModel c){
